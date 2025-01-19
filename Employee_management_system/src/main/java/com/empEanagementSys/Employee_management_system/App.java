@@ -8,32 +8,103 @@ import com.empEanagementSys.Employee_management_system.EmployeeDAO;
 import com.empEanagementSys.Employee_management_system.Employee;
 
 import java.util.List;
+
+import java.util.Scanner;
 public class App {
-    public static void main(String[] args) {
-    	 EmployeeDAO employeeDAO = new EmployeeDAO();
+	 private static final EmployeeDAO employeeDAO = new EmployeeDAO();
 
          // Add employees
-         Employee emp1 = new Employee();
-         emp1.setName("John Doe");
-         emp1.setDepartment("IT");
-         emp1.setSalary(50000);
+    	 public static void main(String[] args) {
+    	        Scanner scanner = new Scanner(System.in);
+    	        boolean running = true;
 
-         Employee emp2 = new Employee();
-         emp2.setName("Jane Smith");
-         emp2.setDepartment("HR");
-         emp2.setSalary(60000);
+    	        while (running) {
+    	            System.out.println("\n--- Employee Management System ---");
+    	            System.out.println("1. Add Employee");
+    	            System.out.println("2. Update Employee");
+    	            System.out.println("3. Delete Employee");
+    	            System.out.println("4. View Employee");
+    	            System.out.println("5. View All Employees");
+    	            System.out.println("6. Exit");
+    	            System.out.print("Choose an operation: ");
+    	            int choice = scanner.nextInt();
 
-         employeeDAO.saveEmployee(emp1);
-         employeeDAO.saveEmployee(emp2);
+    	            switch (choice) {
+    	                case 1 -> addEmployee(scanner);
+    	                case 2 -> updateEmployee(scanner);
+    	                case 3 -> deleteEmployee(scanner);
+    	                case 4 -> viewEmployee(scanner);
+    	                case 5 -> viewAllEmployees();
+    	                case 6 -> {
+    	                    running = false;
+    	                    System.out.println("Exiting system. Goodbye!");
+    	                }
+    	                default -> System.out.println("Invalid choice. Please try again.");
+    	            }
+    	        }
+    	        scanner.close();
+    	    }
 
-         // Fetch and display employees
-         List<Employee> employees = employeeDAO.getEmployees();
-         employees.forEach(emp -> {
-             System.out.println("ID: " + emp.getId());
-             System.out.println("Name: " + emp.getName());
-             System.out.println("Department: " + emp.getDepartment());
-             System.out.println("Salary: " + emp.getSalary());
-             System.out.println("-------------------");
-         });
-    }
+    	    private static void addEmployee(Scanner scanner) {
+    	        scanner.nextLine(); // Consume newline
+    	        System.out.print("Enter Employee Name: ");
+    	        String name = scanner.nextLine();
+    	        System.out.print("Enter Department: ");
+    	        String department = scanner.nextLine();
+    	        System.out.print("Enter Salary: ");
+    	        double salary = scanner.nextDouble();
+
+    	        Employee employee = new Employee(name, department, salary);
+    	        employeeDAO.addEmployee(employee);
+    	        System.out.println("Employee added successfully!");
+    	    }
+
+    	    private static void updateEmployee(Scanner scanner) {
+    	        System.out.print("Enter Employee ID to update: ");
+    	        int id = scanner.nextInt();
+    	        scanner.nextLine(); // Consume newline
+
+    	        Employee employee = employeeDAO.getEmployee(id);
+    	        if (employee != null) {
+    	            System.out.print("Enter new Name (current: " + employee.getName() + "): ");
+    	            String name = scanner.nextLine();
+    	            System.out.print("Enter new Department (current: " + employee.getDepartment() + "): ");
+    	            String department = scanner.nextLine();
+    	            System.out.print("Enter new Salary (current: " + employee.getSalary() + "): ");
+    	            double salary = scanner.nextDouble();
+
+    	            employee.setName(name);
+    	            employee.setDepartment(department);
+    	            employee.setSalary(salary);
+    	            employeeDAO.updateEmployee(employee);
+    	            System.out.println("Employee updated successfully!");
+    	        } else {
+    	            System.out.println("Employee ID not found.");
+    	        }
+    	    }
+
+    	    private static void deleteEmployee(Scanner scanner) {
+    	        System.out.print("Enter Employee ID to delete: ");
+    	        int id = scanner.nextInt();
+    	        employeeDAO.deleteEmployee(id);
+    	        System.out.println("Employee deleted successfully!");
+    	    }
+
+    	    private static void viewEmployee(Scanner scanner) {
+    	        System.out.print("Enter Employee ID to view: ");
+    	        int id = scanner.nextInt();
+    	        Employee employee = employeeDAO.getEmployee(id);
+    	        if (employee != null) {
+    	            System.out.println(employee);
+    	        } else {
+    	            System.out.println("Employee ID not found.");
+    	        }
+    	    }
+
+    	    private static void viewAllEmployees() {
+    	        System.out.println("\n--- All Employees ---");
+    	        for (Employee employee : employeeDAO.getAllEmployees()) {
+    	            System.out.println(employee);
+    	        }
+    	    }
 }
